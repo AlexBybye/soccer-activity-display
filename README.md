@@ -7,14 +7,14 @@ It reads up to 200 recent public GitHub events, groups them into a 30-day pulse,
 ## Embed
 
 ```html
-<img src="https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=red" alt="AlexBybye GitHub attack pulse">
+<img src="https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=bayern" alt="AlexBybye GitHub attack pulse">
 ```
 
-Live endpoint: <https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=red>
+Live endpoint: <https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=bayern>
 
-`username` is required. `club` is optional and accepts `red`, `sky`, `royal`, `green`, `black`, or `violet`; unknown values fall back to `red`. These are palette names only and do not include official club logos or assets.
+`username` is required. `club` is optional and accepts `bayern`, `realmadrid`, `intermilan`, `barcelona`, or `dortmund`; unknown values fall back to `bayern`. These are club-inspired palette names only and do not include official club logos or assets. The presets are based on Bayern (red/white), Real Madrid (white/blue), Inter Milan (blue/black), Barcelona (red/yellow), and Dortmund (yellow/black).
 
-The response is a self-contained `image/svg+xml` document. The line and peak marker remain readable if SVG animation is unavailable or reduced motion is enabled.
+The response is a self-contained `image/svg+xml` document. The line and peak marker are rendered statically for consistent display in README images.
 
 ## Local development
 
