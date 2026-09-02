@@ -7,8 +7,10 @@ It reads up to 200 recent public GitHub events, groups them into a 30-day pulse,
 ## Embed
 
 ```html
-<img src="https://YOUR-WORKER-DOMAIN/graph?username=AlexBybye&club=red" alt="AlexBybye GitHub attack pulse">
+<img src="https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=red" alt="AlexBybye GitHub attack pulse">
 ```
+
+Live endpoint: <https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=red>
 
 `username` is required. `club` is optional and accepts `red`, `sky`, `royal`, `green`, `black`, or `violet`; unknown values fall back to `red`. These are palette names only and do not include official club logos or assets.
 
