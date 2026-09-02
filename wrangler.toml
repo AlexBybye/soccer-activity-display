@@ -4,7 +4,6 @@ compatibility_date = "2026-07-01"
 workers_dev = true
 preview_urls = false
 
-# Create a KV namespace and uncomment this block before production deployment.
-# [[kv_namespaces]]
-# binding = "ATTACK_PULSE_CACHE"
-# id = "replace-with-kv-namespace-id"
+[[kv_namespaces]]
+binding = "ATTACK_PULSE_CACHE"
+id = "5c03986bb4bf459998337992bd301527"
