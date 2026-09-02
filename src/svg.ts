@@ -1,0 +1,80 @@
+import type { AttackDay, AttackSummary, Theme } from './types'
+
+const WIDTH = 1000
+const HEIGHT = 360
+const LEFT = 64
+const RIGHT = 952
+const TOP = 112
+const BOTTOM = 300
+const INTERVALS = 4
+
+function escapeXml(value: string): string {
+  return value.replace(/[<>&'\"]/g, (character) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '\"': '&quot;' })[character] || character)
+}
+
+export function niceMax(days: AttackDay[]): number {
+  const maxActions = Math.max(0, ...days.map((day) => day.actions))
+  if (maxActions <= INTERVALS) return INTERVALS
+  const roughStep = maxActions / INTERVALS
+  const magnitude = 10 ** Math.floor(Math.log10(roughStep))
+  const normalized = roughStep / magnitude
+  const factor = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 2.5 ? 2.5 : normalized <= 3 ? 3 : normalized <= 4 ? 4 : normalized <= 5 ? 5 : normalized <= 8 ? 8 : 10
+  return Math.ceil(factor * magnitude * INTERVALS)
+}
+
+function eventLabel(value: string): string {
+  return ({ PushEvent: 'Code pushes', PullRequestEvent: 'Pull requests', PullRequestReviewEvent: 'Reviews', IssuesEvent: 'Issues', IssueCommentEvent: 'Issue comments', CreateEvent: 'Created repositories', ForkEvent: 'Forks', ReleaseEvent: 'Releases', WatchEvent: 'Stars', OtherEvent: 'Other public activity' } as Record<string, string>)[value] || 'Other public activity'
+}
+
+function dateLabel(value: string): string {
+  const date = new Date(`${value}T00:00:00Z`)
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(date)
+}
+
+function metric(label: string, value: string | number, x: number, theme: Theme): string {
+  return `<text x="${x}" y="76" fill="${theme.muted}" font-size="12" letter-spacing="1.2">${escapeXml(label.toUpperCase())}</text><text x="${x}" y="98" fill="${theme.text}" font-size="20" font-weight="700">${escapeXml(String(value))}</text>`
+}
+
+export function renderSvg(username: string, summary: AttackSummary, theme: Theme): string {
+  const max = niceMax(summary.days)
+  const points = summary.days.map((day, index) => ({
+    ...day,
+    x: LEFT + index / Math.max(1, summary.days.length - 1) * (RIGHT - LEFT),
+    y: BOTTOM - day.actions / max * (BOTTOM - TOP)
+  }))
+  const linePath = points.map((point, index) => `${index ? 'L' : 'M'} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ')
+  const areaPath = `${linePath} L ${RIGHT} ${BOTTOM} L ${LEFT} ${BOTTOM} Z`
+  const peak = points.reduce((best, point) => point.actions > best.actions ? point : best, points[0])
+  const ticks = Array.from({ length: INTERVALS + 1 }, (_, index) => ({ value: max - index * max / INTERVALS, y: TOP + index / INTERVALS * (BOTTOM - TOP) }))
+  const grid = ticks.map((tick) => `<line x1="${LEFT}" y1="${tick.y}" x2="${RIGHT}" y2="${tick.y}" />`).join('') + Array.from({ length: 7 }, (_, index) => { const x = LEFT + (index + 1) / 8 * (RIGHT - LEFT); return `<line x1="${x}" y1="${TOP}" x2="${x}" y2="${BOTTOM}" />` }).join('')
+  const pointsMarkup = points.filter((point) => point.actions > 0).map((point) => `<circle cx="${point.x}" cy="${point.y}" r="4" fill="${theme.text}" stroke="${theme.accent}" stroke-width="3"><title>${escapeXml(dateLabel(point.date))}: ${point.actions} weighted actions</title></circle>`).join('')
+  const dateTicks = [points[0], points[Math.floor(points.length / 2)], points[points.length - 1]].filter(Boolean).map((point) => `<text x="${point.x}" y="328" text-anchor="${point.x === LEFT ? 'start' : point.x === RIGHT ? 'end' : 'middle'}" fill="${theme.muted}" font-size="11">${escapeXml(dateLabel(point.date))}</text>`).join('')
+  const hasPeak = peak.actions > 0
+  const description = `${summary.totalActions} weighted actions across ${summary.activeDays} active days for ${username}${hasPeak ? '. Peak activity is marked on a soccer pitch' : ''}`
+  const peakMarkup = hasPeak
+    ? `<g aria-label="Peak activity marker"><circle cx="${peak.x}" cy="${peak.y}" r="10" fill="none" stroke="${theme.accentStrong}" stroke-width="2" opacity=".8" /><circle cx="${peak.x}" cy="${peak.y}" r="4" fill="${theme.accentStrong}" /></g>`
+    : ''
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}" role="img" aria-labelledby="title desc">
+  <title id="title">${escapeXml(username)} GitHub attack pulse</title>
+  <desc id="desc">${escapeXml(description)}.</desc>
+  <style>
+    .grid{fill:none;stroke:${theme.grid};stroke-width:1}.line{fill:none;stroke:${theme.accentStrong};stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.area{fill:${theme.area}}.reveal{transform-box:fill-box;transform-origin:left center;animation:reveal 2.5s linear both}@keyframes reveal{from{transform:scaleX(0)}to{transform:scaleX(1)}}@media(prefers-reduced-motion:reduce){.reveal{animation:none}}
+  </style>
+  <rect width="1000" height="360" rx="18" fill="${theme.background}" />
+  <rect x="20" y="20" width="960" height="320" rx="14" fill="${theme.panel}" stroke="${theme.grid}" />
+  <text x="44" y="49" fill="${theme.accentStrong}" font-size="12" font-weight="700" letter-spacing="2">ATTACK PULSE / GITHUB ACTIVITY</text>
+  ${metric('weighted actions', summary.totalActions, 44, theme)}${metric('active days', summary.activeDays, 220, theme)}${metric('repositories', summary.repositories, 390, theme)}${metric('play style', eventLabel(summary.topEvent), 560, theme)}
+  <g class="grid">${grid}<rect x="${LEFT}" y="${TOP}" width="${RIGHT - LEFT}" height="${BOTTOM - TOP}" /><line x1="${(LEFT + RIGHT) / 2}" y1="${TOP}" x2="${(LEFT + RIGHT) / 2}" y2="${BOTTOM}" /><circle cx="${(LEFT + RIGHT) / 2}" cy="${(TOP + BOTTOM) / 2}" r="42" /></g>
+  <g fill="${theme.muted}" font-size="10" text-anchor="end">${ticks.map((tick) => `<text x="52" y="${tick.y + 4}">${Math.round(tick.value)}</text>`).join('')}</g>
+  <g class="reveal"><path class="area" d="${areaPath}" /><path class="line" d="${linePath}" /></g>
+  ${pointsMarkup}
+  ${peakMarkup}
+  ${dateTicks}
+  <text x="${RIGHT}" y="328" text-anchor="end" fill="${theme.muted}" font-size="10">up to 200 recent public events · ${escapeXml(summary.lastActionAt ? `updated ${summary.lastActionAt.slice(0, 10)}` : 'no public activity')}</text>
+</svg>`
+}
+
+export function renderErrorSvg(message: string): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="240" viewBox="0 0 1000 240" role="img"><rect width="1000" height="240" rx="18" fill="#09090b"/><text x="40" y="92" fill="#ff3340" font-size="16" font-weight="700">ATTACK PULSE UNAVAILABLE</text><text x="40" y="132" fill="#f4f4f5" font-size="15">${escapeXml(message)}</text><text x="40" y="176" fill="#a1a1aa" font-size="12">Check the username and try again later.</text></svg>`
+}
