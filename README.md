@@ -1,8 +1,20 @@
 # GitHub Readme Attack Pulse
 
-An embeddable, soccer-themed SVG activity graph for GitHub profile READMEs.
+An embeddable soccer activity graph for GitHub profile READMEs. It turns the public events behind a profile into a 30-day attack pulse, then marks the day where that profile played its most active stretch.
 
-It reads up to 200 recent public GitHub events, groups them into a 30-day pulse, and highlights the peak-activity moment on a football pitch. The action count is intentionally weighted by event type; it is not the same metric as GitHub's contribution calendar.
+## The useful part is the habit read
+
+This is not another contribution-calendar clone. The Worker reads up to 200 recent public events and computes the same compact scouting report for every render:
+
+| Signal | What it tells you |
+| --- | --- |
+| Weighted actions | How intense the recent activity was, with pushes, reviews, issues, releases, and other events weighted by action value. |
+| Active days | Whether the work happened consistently or in short bursts. |
+| Repositories | How many distinct codebases appeared in the recent run. |
+| Play style | The dominant event type, such as code pushes or pull requests. |
+| Daily pulse and peak | The rhythm of the last 30 days, with the highest-activity day marked by a football. |
+
+The result is a static SVG, so the analysis remains readable when GitHub or a README viewer does not run JavaScript.
 
 ## Embed
 
@@ -12,9 +24,27 @@ It reads up to 200 recent public GitHub events, groups them into a 30-day pulse,
 
 Live endpoint: <https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=bayern>
 
-`username` is required. `club` is optional and accepts `bayern`, `realmadrid`, `intermilan`, `barcelona`, or `dortmund`; unknown values fall back to `bayern`. These are club-inspired palette names only and do not include official club logos or assets. The presets are based on Bayern (red/white), Real Madrid (white/blue), Inter Milan (blue/black), Barcelona (red/yellow), and Dortmund (yellow/black).
+`username` is required. `club` is optional and accepts `bayern`, `realmadrid`, `intermilan`, `barcelona`, or `dortmund`; unknown values fall back to `bayern`. These are club-inspired palette names only and do not include official club logos or assets.
 
-The response is a self-contained `image/svg+xml` document. The line and peak marker are rendered statically for consistent display in README images.
+## Palette previews
+
+Every preset uses the same original chart layout, spacing, pitch grid, typography, and peak marker. Only the accent colors change.
+
+<table>
+  <tr>
+    <td><strong>Bayern</strong><br><img src="examples/bayern.svg" alt="Bayern red and white palette preview" width="480"></td>
+    <td><strong>Real Madrid</strong><br><img src="examples/realmadrid.svg" alt="Real Madrid white and blue palette preview" width="480"></td>
+  </tr>
+  <tr>
+    <td><strong>Inter Milan</strong><br><img src="examples/intermilan.svg" alt="Inter Milan blue and black palette preview" width="480"></td>
+    <td><strong>Barcelona</strong><br><img src="examples/barcelona.svg" alt="Barcelona red and yellow palette preview" width="480"></td>
+  </tr>
+  <tr>
+    <td colspan="2"><strong>Dortmund</strong><br><img src="examples/dortmund.svg" alt="Dortmund yellow and black palette preview" width="480"></td>
+  </tr>
+</table>
+
+The preview files use a fixed sample event shape so the five palettes can be compared side by side. The hosted endpoint always computes the chart from the requested user's current public events.
 
 ## Local development
 

@@ -3,11 +3,11 @@ import type { Theme } from './types'
 export const DEFAULT_THEME = 'bayern'
 
 export const THEMES: Record<string, Theme> = {
-  bayern: { key: 'bayern', background: '#19070b', panel: '#351019', grid: '#fee2e22b', text: '#fff7f7', muted: '#f5b8be', accent: '#e30613', accentStrong: '#ffffff', area: '#e3061352' },
-  realmadrid: { key: 'realmadrid', background: '#081329', panel: '#12254b', grid: '#dbeafe2b', text: '#f8fafc', muted: '#a9c3e8', accent: '#2563eb', accentStrong: '#ffffff', area: '#2563eb52' },
-  intermilan: { key: 'intermilan', background: '#05080f', panel: '#0d1728', grid: '#bfdbfe26', text: '#f5f9ff', muted: '#9cb9dc', accent: '#00529f', accentStrong: '#2da8ff', area: '#00529f52' },
-  barcelona: { key: 'barcelona', background: '#1d0819', panel: '#38102d', grid: '#fef3c72b', text: '#fff9e6', muted: '#e9b7bf', accent: '#a50044', accentStrong: '#fcbf00', area: '#a5004452' },
-  dortmund: { key: 'dortmund', background: '#111111', panel: '#242424', grid: '#fef08a2b', text: '#fffde8', muted: '#d8ce7a', accent: '#f9d71c', accentStrong: '#ffe66d', area: '#f9d71c52' },
+  bayern: { key: 'bayern', background: '#09090b', panel: '#18181b', grid: '#f4f4f51f', text: '#f4f4f5', muted: '#a1a1aa', accent: '#e30613', accentStrong: '#ff3340', area: '#e3061352' },
+  realmadrid: { key: 'realmadrid', background: '#09090b', panel: '#18181b', grid: '#f4f4f51f', text: '#f4f4f5', muted: '#a1a1aa', accent: '#2563eb', accentStrong: '#60a5fa', area: '#2563eb52' },
+  intermilan: { key: 'intermilan', background: '#09090b', panel: '#18181b', grid: '#f4f4f51f', text: '#f4f4f5', muted: '#a1a1aa', accent: '#00529f', accentStrong: '#2da8ff', area: '#00529f52' },
+  barcelona: { key: 'barcelona', background: '#09090b', panel: '#18181b', grid: '#f4f4f51f', text: '#f4f4f5', muted: '#a1a1aa', accent: '#a50044', accentStrong: '#fcbf00', area: '#a5004452' },
+  dortmund: { key: 'dortmund', background: '#09090b', panel: '#18181b', grid: '#f4f4f51f', text: '#f4f4f5', muted: '#a1a1aa', accent: '#f9d71c', accentStrong: '#ffe66d', area: '#f9d71c52' },
 
   // Legacy palette keys remain accepted for existing embeds. New embeds should
   // use one of the club presets above.
