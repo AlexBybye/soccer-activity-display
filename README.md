@@ -24,23 +24,24 @@ The result is a static SVG, so the analysis remains readable when GitHub or a RE
 
 Live endpoint: <https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=bayern>
 
-`username` is required. `club` is optional and accepts `bayern`, `realmadrid`, `intermilan`, `barcelona`, or `dortmund`; unknown values fall back to `bayern`. These are club-inspired palette names only and do not include official club logos or assets.
+`username` is required. `club` is optional and accepts `bayern`, `realmadrid`, `intermilan`, `barcelona`, `dortmund`, or `mancity`; unknown values fall back to `bayern`. `manchestercity` is also accepted as an alias for `mancity`. These are club-inspired palette names only and do not include official club logos or assets.
 
 ## Palette previews
 
-Every preset uses the same original chart layout, spacing, pitch grid, typography, and peak marker. Only the accent colors change.
+Every preset uses the same chart layout, spacing, typography, and peak marker. A shared soft-gray background keeps the card integrated with GitHub, while the pitch grid and pulse use each club's accent colors.
 
 <table>
   <tr>
     <td><strong>Bayern</strong><br><img src="examples/bayern.svg" alt="Bayern red and white palette preview" width="480"></td>
-    <td><strong>Real Madrid</strong><br><img src="examples/realmadrid.svg" alt="Real Madrid white and blue palette preview" width="480"></td>
+    <td><strong>Real Madrid</strong><br><img src="examples/realmadrid.svg" alt="Real Madrid blue and yellow palette preview" width="480"></td>
   </tr>
   <tr>
     <td><strong>Inter Milan</strong><br><img src="examples/intermilan.svg" alt="Inter Milan blue and black palette preview" width="480"></td>
     <td><strong>Barcelona</strong><br><img src="examples/barcelona.svg" alt="Barcelona red and yellow palette preview" width="480"></td>
   </tr>
   <tr>
-    <td colspan="2"><strong>Dortmund</strong><br><img src="examples/dortmund.svg" alt="Dortmund yellow and black palette preview" width="480"></td>
+    <td><strong>Dortmund</strong><br><img src="examples/dortmund.svg" alt="Dortmund yellow and black palette preview" width="480"></td>
+    <td><strong>Manchester City</strong><br><img src="examples/mancity.svg" alt="Manchester City sky blue and white palette preview" width="480"></td>
   </tr>
 </table>
 

@@ -46,7 +46,7 @@ export function renderSvg(username: string, summary: AttackSummary, theme: Theme
   const areaPath = `${linePath} L ${RIGHT} ${BOTTOM} L ${LEFT} ${BOTTOM} Z`
   const peak = points.reduce((best, point) => point.actions > best.actions ? point : best, points[0])
   const ticks = Array.from({ length: INTERVALS + 1 }, (_, index) => ({ value: max - index * max / INTERVALS, y: TOP + index / INTERVALS * (BOTTOM - TOP) }))
-  const grid = ticks.map((tick) => `<line x1="${LEFT}" y1="${tick.y}" x2="${RIGHT}" y2="${tick.y}" />`).join('') + Array.from({ length: 7 }, (_, index) => { const x = LEFT + (index + 1) / 8 * (RIGHT - LEFT); return `<line x1="${x}" y1="${TOP}" x2="${x}" y2="${BOTTOM}" />` }).join('')
+  const grid = ticks.map((tick) => `<line x1="${LEFT}" y1="${tick.y}" x2="${RIGHT}" y2="${tick.y}" stroke="${theme.grid}" stroke-width="1" />`).join('') + Array.from({ length: 7 }, (_, index) => { const x = LEFT + (index + 1) / 8 * (RIGHT - LEFT); return `<line x1="${x}" y1="${TOP}" x2="${x}" y2="${BOTTOM}" stroke="${theme.grid}" stroke-width="1" />` }).join('')
   const pointsMarkup = points.filter((point) => point.actions > 0).map((point) => `<circle cx="${point.x}" cy="${point.y}" r="4" fill="${theme.text}" stroke="${theme.accent}" stroke-width="3"><title>${escapeXml(dateLabel(point.date))}: ${point.actions} weighted actions</title></circle>`).join('')
   const dateTicks = [points[0], points[Math.floor(points.length / 2)], points[points.length - 1]].filter(Boolean).map((point) => `<text x="${point.x}" y="328" text-anchor="${point.x === LEFT ? 'start' : point.x === RIGHT ? 'end' : 'middle'}" fill="${theme.muted}" font-size="11">${escapeXml(dateLabel(point.date))}</text>`).join('')
   const hasPeak = peak.actions > 0
@@ -62,7 +62,7 @@ export function renderSvg(username: string, summary: AttackSummary, theme: Theme
   <rect x="20" y="20" width="960" height="320" rx="14" fill="${theme.panel}" stroke="${theme.grid}" />
   <text x="44" y="49" fill="${theme.accentStrong}" font-size="12" font-weight="700" letter-spacing="2">ATTACK PULSE / GITHUB ACTIVITY</text>
   ${metric('weighted actions', summary.totalActions, 44, theme)}${metric('active days', summary.activeDays, 220, theme)}${metric('repositories', summary.repositories, 390, theme)}${metric('play style', eventLabel(summary.topEvent), 560, theme)}
-  <g class="grid">${grid}<rect x="${LEFT}" y="${TOP}" width="${RIGHT - LEFT}" height="${BOTTOM - TOP}" /><line x1="${(LEFT + RIGHT) / 2}" y1="${TOP}" x2="${(LEFT + RIGHT) / 2}" y2="${BOTTOM}" /><circle cx="${(LEFT + RIGHT) / 2}" cy="${(TOP + BOTTOM) / 2}" r="42" /></g>
+  <g class="grid">${grid}<rect x="${LEFT}" y="${TOP}" width="${RIGHT - LEFT}" height="${BOTTOM - TOP}" fill="none" stroke="${theme.grid}" stroke-width="1" /><line x1="${(LEFT + RIGHT) / 2}" y1="${TOP}" x2="${(LEFT + RIGHT) / 2}" y2="${BOTTOM}" stroke="${theme.grid}" stroke-width="1" /><circle cx="${(LEFT + RIGHT) / 2}" cy="${(TOP + BOTTOM) / 2}" r="42" fill="none" stroke="${theme.grid}" stroke-width="1" /></g>
   <g fill="${theme.muted}" font-size="10" text-anchor="end">${ticks.map((tick) => `<text x="52" y="${tick.y + 4}">${Math.round(tick.value)}</text>`).join('')}</g>
   <path class="area" d="${areaPath}" fill="${theme.area}" />
   <path class="line" d="${linePath}" fill="none" stroke="${theme.accentStrong}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
@@ -74,5 +74,5 @@ export function renderSvg(username: string, summary: AttackSummary, theme: Theme
 }
 
 export function renderErrorSvg(message: string): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="240" viewBox="0 0 1000 240" role="img"><rect width="1000" height="240" rx="18" fill="#09090b"/><text x="40" y="92" fill="#ff3340" font-size="16" font-weight="700">ATTACK PULSE UNAVAILABLE</text><text x="40" y="132" fill="#f4f4f5" font-size="15">${escapeXml(message)}</text><text x="40" y="176" fill="#a1a1aa" font-size="12">Check the username and try again later.</text></svg>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="240" viewBox="0 0 1000 240" role="img"><rect width="1000" height="240" rx="18" fill="#f4f4f5"/><rect x="20" y="20" width="960" height="200" rx="14" fill="#ffffff" stroke="#cbd5e1"/><text x="40" y="92" fill="#b42333" font-size="16" font-weight="700">ATTACK PULSE UNAVAILABLE</text><text x="40" y="132" fill="#1f2937" font-size="15">${escapeXml(message)}</text><text x="40" y="176" fill="#64748b" font-size="12">Check the username and try again later.</text></svg>`
 }

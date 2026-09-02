@@ -21,6 +21,6 @@ const summary = {
 }
 
 await mkdir(new URL('../examples/', import.meta.url), { recursive: true })
-for (const key of ['bayern', 'realmadrid', 'intermilan', 'barcelona', 'dortmund']) {
+for (const key of ['bayern', 'realmadrid', 'intermilan', 'barcelona', 'dortmund', 'mancity']) {
   await writeFile(new URL(`../examples/${key}.svg`, import.meta.url), `${renderSvg('AlexBybye', summary, THEMES[key])}\n`)
 }
