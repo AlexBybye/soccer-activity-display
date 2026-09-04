@@ -13,9 +13,29 @@ function responseHeaders(cacheControl = 'public, max-age=300, s-maxage=300, stal
 
 function key(username: string): string { return `${CACHE_PREFIX}${username.toLowerCase()}` }
 
+function hasCurrentDayWindow(snapshot: CachedSnapshot, now: Date): boolean {
+  const days = snapshot.attackSummary?.days
+  if (!Array.isArray(days) || days.length !== 30) return false
+
+  const today = new Date(now)
+  today.setUTCHours(0, 0, 0, 0)
+  return days.every((day, index) => {
+    const expected = new Date(today)
+    expected.setUTCDate(today.getUTCDate() - (days.length - 1 - index))
+    return day?.date === expected.toISOString().slice(0, 10)
+  })
+}
+
 async function readCache(username: string, env: Env): Promise<CachedSnapshot | null> {
-  const remote = await env.ATTACK_PULSE_CACHE?.get<CachedSnapshot>(key(username), 'json')
-  return remote || memoryCache.get(key(username)) || null
+  const cacheKey = key(username)
+  const remote = await env.ATTACK_PULSE_CACHE?.get<CachedSnapshot>(cacheKey, 'json')
+  const local = memoryCache.get(cacheKey)
+  if (!remote) return local || null
+  if (!local) return remote
+
+  // KV is eventually consistent and may briefly return the value from before a
+  // refresh. Prefer the newest snapshot so stale remote data cannot win.
+  return Date.parse(local.fetchedAt) > Date.parse(remote.fetchedAt) ? local : remote
 }
 
 async function writeCache(username: string, snapshot: CachedSnapshot, env: Env): Promise<void> {
@@ -36,7 +56,12 @@ function refresh(username: string, env: Env): Promise<CachedSnapshot> {
 async function snapshotFor(username: string, env: Env, context: ExecutionContext): Promise<{ snapshot: CachedSnapshot; stale: boolean }> {
   const cached = await readCache(username, env)
   if (cached) {
-    const stale = Date.parse(cached.expiresAt) <= Date.now()
+    const now = new Date()
+    // A 24-hour TTL can cross UTC midnight while the cached 30-day series still
+    // ends on yesterday. Refresh synchronously so every response includes today.
+    if (!hasCurrentDayWindow(cached, now)) return { snapshot: await refresh(username, env), stale: false }
+
+    const stale = Date.parse(cached.expiresAt) <= now.getTime()
     if (stale) context.waitUntil(refresh(username, env).catch(() => undefined))
     return { snapshot: cached, stale }
   }

@@ -47,7 +47,10 @@ export function renderSvg(username: string, summary: AttackSummary, theme: Theme
   const peak = points.reduce((best, point) => point.actions > best.actions ? point : best, points[0])
   const ticks = Array.from({ length: INTERVALS + 1 }, (_, index) => ({ value: max - index * max / INTERVALS, y: TOP + index / INTERVALS * (BOTTOM - TOP) }))
   const grid = ticks.map((tick) => `<line x1="${LEFT}" y1="${tick.y}" x2="${RIGHT}" y2="${tick.y}" stroke="${theme.grid}" stroke-width="1" />`).join('') + Array.from({ length: 7 }, (_, index) => { const x = LEFT + (index + 1) / 8 * (RIGHT - LEFT); return `<line x1="${x}" y1="${TOP}" x2="${x}" y2="${BOTTOM}" stroke="${theme.grid}" stroke-width="1" />` }).join('')
-  const pointsMarkup = points.filter((point) => point.actions > 0).map((point) => `<circle cx="${point.x}" cy="${point.y}" r="4" fill="${theme.text}" stroke="${theme.accent}" stroke-width="3"><title>${escapeXml(dateLabel(point.date))}: ${point.actions} weighted actions</title></circle>`).join('')
+  const pointsMarkup = points.map((point) => {
+    const active = point.actions > 0
+    return `<circle class="data-point" cx="${point.x}" cy="${point.y}" r="${active ? 4 : 2}" fill="${active ? theme.text : theme.panel}" stroke="${theme.accent}" stroke-width="${active ? 3 : 1.5}" opacity="${active ? 1 : 0.75}"><title>${escapeXml(dateLabel(point.date))}: ${point.actions} weighted actions</title></circle>`
+  }).join('')
   const dateTicks = [points[0], points[Math.floor(points.length / 2)], points[points.length - 1]].filter(Boolean).map((point) => `<text x="${point.x}" y="328" text-anchor="${point.x === LEFT ? 'start' : point.x === RIGHT ? 'end' : 'middle'}" fill="${theme.muted}" font-size="11">${escapeXml(dateLabel(point.date))}</text>`).join('')
   const hasPeak = peak.actions > 0
   const description = `${summary.totalActions} weighted actions across ${summary.activeDays} active days for ${username}${hasPeak ? '. Peak activity is marked with a soccer ball on a soccer pitch' : ''}`

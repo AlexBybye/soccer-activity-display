@@ -21,8 +21,9 @@ describe('attack activity analysis', () => {
     expect(summary.topEvent).toBe('PullRequestEvent')
   })
 
-  it('preserves event weighting', () => {
+  it('preserves event weighting and prefers the complete push size', () => {
     expect(eventWeight({ type: 'PushEvent', created_at: now.toISOString(), repo: { name: 'a' }, payload: { commits: [{}, {}, {}] } })).toBe(3)
+    expect(eventWeight({ type: 'PushEvent', created_at: now.toISOString(), repo: { name: 'a' }, payload: { commits: [{}], size: 5 } })).toBe(5)
     expect(eventWeight({ type: 'ReleaseEvent', created_at: now.toISOString(), repo: { name: 'a' } })).toBe(5)
   })
 })

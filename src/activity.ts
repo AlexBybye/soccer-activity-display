@@ -5,7 +5,9 @@ export const ATTACK_EVENT_PAGE_SIZE = 100
 export const ATTACK_CACHE_TTL_MS = 24 * 60 * 60 * 1000
 
 export function eventWeight(event: GithubEventResponse): number {
-  if (event.type === 'PushEvent') return Math.max(2, event.payload?.commits?.length || event.payload?.size || 0)
+  // GitHub may truncate PushEvent payload.commits, while payload.size keeps the
+  // complete number of commits in the push.
+  if (event.type === 'PushEvent') return Math.max(2, event.payload?.size || event.payload?.commits?.length || 0)
   if (event.type === 'PullRequestEvent') return 4
   if (event.type === 'PullRequestReviewEvent') return 3
   if (event.type === 'ReleaseEvent') return 5
