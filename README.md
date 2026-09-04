@@ -6,23 +6,25 @@ An embeddable soccer activity graph for GitHub profile READMEs. It turns the pub
 
 This is not another contribution-calendar clone. The Worker reads the last 15 days of public events and computes the same compact scouting report for every render:
 
-| Signal | What it tells you |
-| --- | --- |
-| Weighted actions | How intense the recent activity was, with pushes, reviews, issues, releases, and other events weighted by action value. |
-| Active days | Whether the work happened consistently or in short bursts. |
-| Repositories | How many distinct codebases appeared in the recent run. |
-| Play style | The dominant event type, such as code pushes or pull requests. |
-| Daily pulse and peak | The rhythm of the last 15 days, with the highest-activity day marked by a football. |
+| Signal               | What it tells you                                                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Weighted actions     | How intense the recent activity was, with pushes, reviews, issues, releases, and other events weighted by action value. |
+| Active days          | Whether the work happened consistently or in short bursts.                                                              |
+| Repositories         | How many distinct codebases appeared in the recent run.                                                                 |
+| Play style           | The dominant event type, such as code pushes or pull requests.                                                          |
+| Daily pulse and peak | The rhythm of the last 15 days, with the highest-activity day marked by a football.                                     |
 
 The result is a static SVG, so the analysis remains readable when GitHub or a README viewer does not run JavaScript.
 
 ## Embed
 
 ```html
-<img src="https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=bayern" alt="AlexBybye GitHub attack pulse">
+<a href="https://github.com/AlexBybye/soccer-activity-display" target="_blank">
+  <img src="https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=bayern" alt="AlexBybye GitHub attack pulse">
+</a>
 ```
 
-Live endpoint: <https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=bayern>
+[![AlexBybye GitHub attack pulse](https://github-readme-attack-pulse.github-readme-attack-pulse.workers.dev/graph?username=AlexBybye&club=bayern)](https://github.com/AlexBybye/soccer-activity-display)
 
 `username` is required. `club` is optional and accepts `bayern`, `realmadrid`, `intermilan`, `barcelona`, `dortmund`, or `mancity`; unknown values fall back to `bayern`. `manchestercity` is also accepted as an alias for `mancity`. These are club-inspired palette names only and do not include official club logos or assets.
 
