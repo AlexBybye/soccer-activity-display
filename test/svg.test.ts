@@ -17,7 +17,7 @@ describe('SVG renderer', () => {
     const summary = attackSummary([], new Date('2026-09-02T12:00:00Z'))
     const svg = renderSvg('octocat', summary, resolveTheme('bayern'))
 
-    expect(svg.match(/class="data-point"/g)).toHaveLength(30)
+    expect(svg.match(/class="data-point"/g)).toHaveLength(15)
     expect(svg).toContain('<title>Sep 2: 0 weighted actions</title>')
   })
 })

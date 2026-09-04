@@ -1,7 +1,8 @@
 import type { AttackDay, AttackSummary, Env, GithubEventResponse } from './types'
 
-export const ATTACK_DAY_COUNT = 30
+export const ATTACK_DAY_COUNT = 15
 export const ATTACK_EVENT_PAGE_SIZE = 100
+export const ATTACK_EVENT_PAGE_COUNT = 3
 export const ATTACK_CACHE_TTL_MS = 24 * 60 * 60 * 1000
 
 export function eventWeight(event: GithubEventResponse): number {
@@ -90,7 +91,10 @@ export async function fetchAttackEvents(username: string, env: Env, now = new Da
   cutoff.setUTCHours(0, 0, 0, 0)
   cutoff.setUTCDate(cutoff.getUTCDate() - (ATTACK_DAY_COUNT - 1))
 
-  for (let page = 1; ; page += 1) {
+  // GitHub's Events API exposes at most the latest 300 events (three pages).
+  // A shorter 15-day window reduces truncation for active users, but cannot
+  // recover activity already pushed out of that global API limit.
+  for (let page = 1; page <= ATTACK_EVENT_PAGE_COUNT; page += 1) {
     let batch: GithubEventResponse[]
     try {
       batch = await githubJson<GithubEventResponse[]>(`/users/${encodedUser}/events/public?per_page=${ATTACK_EVENT_PAGE_SIZE}&page=${page}`, env)
@@ -101,7 +105,7 @@ export async function fetchAttackEvents(username: string, env: Env, now = new Da
     if (batch.length === 0) break
 
     for (const event of batch) {
-      // Events arrive newest-first; once we pass the 30-day window we can stop.
+      // Events arrive newest-first; once we pass the 15-day window we can stop.
       if (Date.parse(event.created_at) < cutoff.getTime()) return events
       events.push(event)
     }

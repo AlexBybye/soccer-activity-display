@@ -1,10 +1,10 @@
 # GitHub Readme Attack Pulse
 
-An embeddable soccer activity graph for GitHub profile READMEs. It turns the public events behind a profile into a 30-day attack pulse, then marks the day where that profile played its most active stretch.
+An embeddable soccer activity graph for GitHub profile READMEs. It turns the public events behind a profile into a 15-day attack pulse, then marks the day where that profile played its most active stretch.
 
 ## The useful part is the habit read
 
-This is not another contribution-calendar clone. The Worker reads the last 30 days of public events and computes the same compact scouting report for every render:
+This is not another contribution-calendar clone. The Worker reads the last 15 days of public events and computes the same compact scouting report for every render:
 
 | Signal | What it tells you |
 | --- | --- |
@@ -12,7 +12,7 @@ This is not another contribution-calendar clone. The Worker reads the last 30 da
 | Active days | Whether the work happened consistently or in short bursts. |
 | Repositories | How many distinct codebases appeared in the recent run. |
 | Play style | The dominant event type, such as code pushes or pull requests. |
-| Daily pulse and peak | The rhythm of the last 30 days, with the highest-activity day marked by a football. |
+| Daily pulse and peak | The rhythm of the last 15 days, with the highest-activity day marked by a football. |
 
 The result is a static SVG, so the analysis remains readable when GitHub or a README viewer does not run JavaScript.
 

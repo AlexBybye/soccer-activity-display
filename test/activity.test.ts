@@ -8,13 +8,13 @@ function eventAt(createdAt: string): { type: string; created_at: string; repo: {
 }
 
 describe('attack activity analysis', () => {
-  it('keeps the 30-day window and weighted action contract', () => {
+  it('keeps the 15-day window and weighted action contract', () => {
     const summary = attackSummary([
       { type: 'PushEvent', created_at: '2026-09-02T09:00:00Z', repo: { name: 'a' }, payload: { commits: [{}, {}] } },
       { type: 'PullRequestEvent', created_at: '2026-09-01T09:00:00Z', repo: { name: 'b' } },
       { type: 'WatchEvent', created_at: '2026-08-01T09:00:00Z', repo: { name: 'old' } }
     ], now)
-    expect(summary.days).toHaveLength(30)
+    expect(summary.days).toHaveLength(15)
     expect(summary.totalActions).toBe(6)
     expect(summary.activeDays).toBe(2)
     expect(summary.repositories).toBe(2)
@@ -46,12 +46,10 @@ describe('snapshot caching', () => {
 })
 
 describe('event fetching', () => {
-  it('fetches by the 30-day window instead of a 200-event cap', async () => {
-    const pages = [
-      Array.from({ length: 100 }, (_, i) => eventAt(new Date(Date.UTC(2026, 8, 2) - i * 3_600_000).toISOString())),
-      Array.from({ length: 100 }, (_, i) => eventAt(new Date(Date.UTC(2026, 8, 2) - (100 + i) * 3_600_000).toISOString())),
-      Array.from({ length: 50 }, (_, i) => eventAt(new Date(Date.UTC(2026, 8, 2) - (200 + i) * 3_600_000).toISOString()))
-    ]
+  it('reads at most the 300 events exposed by the GitHub Events API', async () => {
+    const pages = Array.from({ length: 4 }, (_, page) =>
+      Array.from({ length: 100 }, (_, i) => eventAt(new Date(Date.UTC(2026, 8, 2) - (page * 100 + i) * 1_800_000).toISOString()))
+    )
     let calls = 0
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
       const page = Number(new URL(url).searchParams.get('page')) || 1
@@ -60,17 +58,17 @@ describe('event fetching', () => {
     }))
     try {
       const events = await fetchAttackEvents('octocat', {}, now)
-      expect(events).toHaveLength(250)
+      expect(events).toHaveLength(300)
       expect(calls).toBe(3)
     } finally {
       vi.unstubAllGlobals()
     }
   })
 
-  it('stops paginating once events fall outside the 30-day window', async () => {
+  it('stops paginating once events fall outside the 15-day window', async () => {
     const pages = [
       Array.from({ length: 100 }, (_, i) => eventAt(new Date(Date.UTC(2026, 8, 2) - i * 3_600_000).toISOString())),
-      [eventAt('2026-08-10T00:00:00Z'), eventAt('2026-07-01T00:00:00Z')]
+      [eventAt('2026-08-20T00:00:00Z'), eventAt('2026-07-01T00:00:00Z')]
     ]
     let calls = 0
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {

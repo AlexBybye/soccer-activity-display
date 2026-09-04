@@ -1,4 +1,4 @@
-import { ATTACK_CACHE_TTL_MS, attackSummary, buildSnapshot, isValidUsername } from './activity'
+import { ATTACK_CACHE_TTL_MS, ATTACK_DAY_COUNT, attackSummary, buildSnapshot, isValidUsername } from './activity'
 import { renderErrorSvg, renderSvg } from './svg'
 import { resolveTheme } from './themes'
 import type { CachedSnapshot, Env } from './types'
@@ -15,7 +15,7 @@ function key(username: string): string { return `${CACHE_PREFIX}${username.toLow
 
 function hasCurrentDayWindow(snapshot: CachedSnapshot, now: Date): boolean {
   const days = snapshot.attackSummary?.days
-  if (!Array.isArray(days) || days.length !== 30) return false
+  if (!Array.isArray(days) || days.length !== ATTACK_DAY_COUNT) return false
 
   const today = new Date(now)
   today.setUTCHours(0, 0, 0, 0)
@@ -57,7 +57,7 @@ async function snapshotFor(username: string, env: Env, context: ExecutionContext
   const cached = await readCache(username, env)
   if (cached) {
     const now = new Date()
-    // A 24-hour TTL can cross UTC midnight while the cached 30-day series still
+    // A 24-hour TTL can cross UTC midnight while the cached 15-day series still
     // ends on yesterday. Refresh synchronously so every response includes today.
     if (!hasCurrentDayWindow(cached, now)) return { snapshot: await refresh(username, env), stale: false }
 

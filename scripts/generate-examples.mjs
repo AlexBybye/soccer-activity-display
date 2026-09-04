@@ -2,8 +2,8 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { renderSvg } from '../src/svg.ts'
 import { THEMES } from '../src/themes.ts'
 
-const actions = [0, 1, 0, 2, 0, 0, 3, 1, 0, 0, 4, 0, 2, 0, 1, 0, 0, 5, 0, 1, 0, 0, 2, 0, 3, 0, 1, 0, 0, 2]
-const start = new Date('2026-08-04T00:00:00Z')
+const actions = [0, 5, 0, 1, 0, 0, 2, 0, 3, 0, 1, 0, 0, 2, 4]
+const start = new Date('2026-08-19T00:00:00Z')
 const days = actions.map((value, index) => {
   const date = new Date(start)
   date.setUTCDate(start.getUTCDate() + index)

@@ -25,9 +25,9 @@ describe('graph endpoint', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-09-04T01:00:00Z'))
 
-    const days = Array.from({ length: 30 }, (_, index) => {
+    const days = Array.from({ length: 15 }, (_, index) => {
       const date = new Date('2026-09-03T00:00:00Z')
-      date.setUTCDate(date.getUTCDate() - (29 - index))
+      date.setUTCDate(date.getUTCDate() - (14 - index))
       return { date: date.toISOString().slice(0, 10), actions: 0, events: 0 }
     })
     const cached: CachedSnapshot = {
