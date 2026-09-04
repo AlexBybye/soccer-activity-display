@@ -1,4 +1,4 @@
-import { attackSummary, buildSnapshot, isValidUsername } from './activity'
+import { ATTACK_CACHE_TTL_MS, attackSummary, buildSnapshot, isValidUsername } from './activity'
 import { renderErrorSvg, renderSvg } from './svg'
 import { resolveTheme } from './themes'
 import type { CachedSnapshot, Env } from './types'
@@ -20,7 +20,7 @@ async function readCache(username: string, env: Env): Promise<CachedSnapshot | n
 
 async function writeCache(username: string, snapshot: CachedSnapshot, env: Env): Promise<void> {
   memoryCache.set(key(username), snapshot)
-  await env.ATTACK_PULSE_CACHE?.put(key(username), JSON.stringify(snapshot), { expirationTtl: 60 * 60 * 24 })
+  await env.ATTACK_PULSE_CACHE?.put(key(username), JSON.stringify(snapshot), { expirationTtl: Math.floor(ATTACK_CACHE_TTL_MS / 1000) })
 }
 
 function refresh(username: string, env: Env): Promise<CachedSnapshot> {

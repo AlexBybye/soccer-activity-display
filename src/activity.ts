@@ -1,8 +1,8 @@
 import type { AttackDay, AttackSummary, Env, GithubEventResponse } from './types'
 
 export const ATTACK_DAY_COUNT = 30
-export const ATTACK_EVENT_LIMIT = 200
 export const ATTACK_EVENT_PAGE_SIZE = 100
+export const ATTACK_CACHE_TTL_MS = 24 * 60 * 60 * 1000
 
 export function eventWeight(event: GithubEventResponse): number {
   if (event.type === 'PushEvent') return Math.max(2, event.payload?.commits?.length || event.payload?.size || 0)
@@ -81,34 +81,42 @@ export function isValidUsername(username: string): boolean {
   return /^(?!-)(?!.*--)[A-Za-z0-9-]{1,39}(?<!-)$/.test(username)
 }
 
-export async function fetchAttackEvents(username: string, env: Env): Promise<GithubEventResponse[]> {
+export async function fetchAttackEvents(username: string, env: Env, now = new Date()): Promise<GithubEventResponse[]> {
   const encodedUser = encodeURIComponent(username)
   const events: GithubEventResponse[] = []
-  const pageCount = Math.ceil(ATTACK_EVENT_LIMIT / ATTACK_EVENT_PAGE_SIZE)
+  const cutoff = new Date(now)
+  cutoff.setUTCHours(0, 0, 0, 0)
+  cutoff.setUTCDate(cutoff.getUTCDate() - (ATTACK_DAY_COUNT - 1))
 
-  for (let page = 1; page <= pageCount; page += 1) {
-    const perPage = Math.min(ATTACK_EVENT_PAGE_SIZE, ATTACK_EVENT_LIMIT - events.length)
+  for (let page = 1; ; page += 1) {
     let batch: GithubEventResponse[]
     try {
-      batch = await githubJson<GithubEventResponse[]>(`/users/${encodedUser}/events/public?per_page=${perPage}&page=${page}`, env)
+      batch = await githubJson<GithubEventResponse[]>(`/users/${encodedUser}/events/public?per_page=${ATTACK_EVENT_PAGE_SIZE}&page=${page}`, env)
     } catch (error) {
       if (page === 1) throw error
       break
     }
-    events.push(...batch)
-    if (batch.length < perPage) break
+    if (batch.length === 0) break
+
+    for (const event of batch) {
+      // Events arrive newest-first; once we pass the 30-day window we can stop.
+      if (Date.parse(event.created_at) < cutoff.getTime()) return events
+      events.push(event)
+    }
+
+    if (batch.length < ATTACK_EVENT_PAGE_SIZE) break
   }
   return events
 }
 
 export async function buildSnapshot(username: string, env: Env, now = new Date()) {
-  const events = await fetchAttackEvents(username, env)
+  const events = await fetchAttackEvents(username, env, now)
   const fetchedAt = now
   return {
     version: 1 as const,
     username,
     attackSummary: attackSummary(events, now),
     fetchedAt: fetchedAt.toISOString(),
-    expiresAt: new Date(fetchedAt.getTime() + 12 * 60 * 60 * 1000).toISOString()
+    expiresAt: new Date(fetchedAt.getTime() + ATTACK_CACHE_TTL_MS).toISOString()
   }
 }

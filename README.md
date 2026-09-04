@@ -4,7 +4,7 @@ An embeddable soccer activity graph for GitHub profile READMEs. It turns the pub
 
 ## The useful part is the habit read
 
-This is not another contribution-calendar clone. The Worker reads up to 200 recent public events and computes the same compact scouting report for every render:
+This is not another contribution-calendar clone. The Worker reads the last 30 days of public events and computes the same compact scouting report for every render:
 
 | Signal | What it tells you |
 | --- | --- |

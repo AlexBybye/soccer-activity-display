@@ -69,7 +69,7 @@ export function renderSvg(username: string, summary: AttackSummary, theme: Theme
   ${pointsMarkup}
   ${peakMarkup}
   ${dateTicks}
-  <text x="${RIGHT}" y="328" text-anchor="end" fill="${theme.muted}" font-size="10">up to 200 recent public events · ${escapeXml(summary.lastActionAt ? `updated ${summary.lastActionAt.slice(0, 10)}` : 'no public activity')}</text>
+  <text x="${RIGHT}" y="328" text-anchor="end" fill="${theme.muted}" font-size="10">last 30 days of public events · ${escapeXml(summary.lastActionAt ? `updated ${summary.lastActionAt.slice(0, 10)}` : 'no public activity')}</text>
 </svg>`
 }
 
