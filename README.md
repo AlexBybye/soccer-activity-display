@@ -48,7 +48,11 @@ Every preset uses the same chart layout, spacing, typography, and peak marker. A
 </table>
 
 The preview files use a fixed sample event shape so the five palettes can be compared side by side. The hosted endpoint always computes the chart from the requested user's current public events.
-
+### For example, here are some of my classmates public events:
+<img width="1206" height="411" alt="533b969106f40963a6d0c48c6375f3d3" src="https://github.com/user-attachments/assets/5e246f5e-3330-49e5-9f1b-990fcdc076da" />
+<img width="1206" height="409" alt="a1dc430a81581eb4381857262be28d17" src="https://github.com/user-attachments/assets/21418e61-5fed-4021-ad77-9602341915c4" />
+<img width="1206" height="415" alt="885ae243b260bb4547c6f36c869e7b77" src="https://github.com/user-attachments/assets/1dde1bca-67a4-42a0-b4da-8230e73f91b6" />
+You can also use it to find more public events designed by me!
 ## Local development
 
 ```bash
